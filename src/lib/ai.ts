@@ -64,6 +64,11 @@ export function streamReply(system: string, messages: ChatMessage[], readLinks =
       let lastError: unknown;
       for (const model of MODELS) {
         const started = Date.now();
+        // A busy model can stall for ~30s before failing, so give up early if no
+        // text has arrived (reading a link takes longer), and cap the whole answer.
+        const ctl = new AbortController();
+        const firstTextTimer = setTimeout(() => ctl.abort(), readLinks ? 20_000 : 12_000);
+        const overallTimer = setTimeout(() => ctl.abort(), 45_000);
         try {
           const stream = await client.models.generateContentStream({
             model,
@@ -72,7 +77,7 @@ export function streamReply(system: string, messages: ChatMessage[], readLinks =
               parts: [{ text: m.content }],
             })),
             config: {
-              abortSignal: AbortSignal.timeout(30_000),
+              abortSignal: ctl.signal,
               systemInstruction: system,
               // Lets Gemini read a job posting link that appears in the message.
               ...(readLinks && { tools: [{ urlContext: {} }] }),
@@ -80,6 +85,7 @@ export function streamReply(system: string, messages: ChatMessage[], readLinks =
           });
           for await (const chunk of stream) {
             if (chunk.text) {
+              clearTimeout(firstTextTimer);
               if (!wrote) console.log(`${model} first text after ${Date.now() - started} ms`);
               wrote = true;
               controller.enqueue(encoder.encode(chunk.text));
@@ -92,6 +98,9 @@ export function streamReply(system: string, messages: ChatMessage[], readLinks =
           lastError = error;
           // Once text has reached the visitor, a retry would repeat it; stop here.
           if (wrote) break;
+        } finally {
+          clearTimeout(firstTextTimer);
+          clearTimeout(overallTimer);
         }
       }
 
