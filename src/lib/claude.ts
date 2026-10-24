@@ -24,23 +24,23 @@ ${profile}
 
 export const CHAT_SYSTEM = GROUND_RULES;
 
+// A busy recruiter scans this in seconds; FitCard turns each line into a badge or checklist row.
+const FIT_FORMAT = `Task: the user gives a job description. Assess Mridula's fit for a busy recruiter who will spend ten seconds on it. Reply in exactly this plain-text shape and nothing else:
+
+Fit: <Strong | Good | Partial | Weak> — <verdict, at most 20 words>
+✓ <requirement category, 2–4 words> | <proof from her profile, at most 8 words>
+~ <requirement category> | <what's partly there, at most 8 words>
+✗ <requirement category> | <what's missing, at most 8 words>
+Ask: <the one interview question that would best close the biggest gap>
+
+Rules:
+- 5 to 8 checklist lines, one per key requirement of the role, grouped into broad categories (e.g. "Fintech PM experience", "Telco domain", "Regional languages"), most important first.
+- ✓ = clear evidence, ~ = partial or adjacent evidence, ✗ = no evidence. Be candid; a credible assessment helps her more than flattery.
+- If the text isn't a job description, reply only with one sentence saying so.`;
+
 export const FIT_SYSTEM = `${GROUND_RULES}
 
-Task: the user pastes a job description. Give an honest fit assessment of Mridula for that role, in this exact plain-text shape:
-
-Fit: <Strong | Good | Partial | Weak> — <one-sentence verdict>
-Evidence: <n> of <m> key requirements backed by her profile
-
-Where she matches:
-- <requirement> → <specific evidence from her profile>
-
-Gaps to probe:
-- <requirement with little or no evidence in her profile>
-
-Questions worth asking her:
-- <2–3 interview questions that would close the gaps>
-
-Be candid about gaps; a credible assessment helps her more than flattery. If the text isn't a job description, say so briefly.
+${FIT_FORMAT}
 
 If you're given a link, fetch it before writing anything, and start your reply with the "Fit:" line. If the page can't be read or isn't a job posting, reply only: "I couldn't read a job description at that link. Paste the description text instead."`;
 
