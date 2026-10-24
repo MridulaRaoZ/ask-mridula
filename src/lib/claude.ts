@@ -27,22 +27,25 @@ export const CHAT_SYSTEM = GROUND_RULES;
 // A busy recruiter scans this in seconds; FitCard turns each line into a badge or checklist row.
 const FIT_FORMAT = `Task: the user gives a job description. Assess Mridula's fit for a busy recruiter who will spend ten seconds on it. Reply in exactly this plain-text shape and nothing else:
 
-Fit: <Strong | Good | Partial | Weak> — <verdict, at most 20 words>
-✓ <requirement category, 2–4 words> | <proof from her profile, at most 8 words>
-~ <requirement category> | <what's partly there, at most 8 words>
-✗ <requirement category> | <what's missing, at most 8 words>
+Verdict: <one sentence, at most 20 words, naming her main strength and the biggest gap>
+✓ must | <requirement category, 2–4 words> | <proof from her profile, at most 8 words>
+~ plus | <requirement category> | <what's partly there, at most 8 words>
+✗ must | <requirement category> | <what's missing, at most 8 words>
 Ask: <the one interview question that would best close the biggest gap>
 
 Rules:
-- 5 to 8 checklist lines, one per key requirement of the role, grouped into broad categories (e.g. "Fintech PM experience", "Telco domain", "Regional languages"), most important first.
-- ✓ = clear evidence, ~ = partial or adjacent evidence, ✗ = no evidence. Be candid; a credible assessment helps her more than flattery.
+- 5 to 9 checklist lines, one per key requirement of the role, grouped into broad categories (e.g. "Fintech PM experience", "Telco domain", "Malay language"), must-haves first.
+- Mark: ✓ = clear evidence, ~ = partial or adjacent evidence, ✗ = no evidence. Be candid; a credible assessment helps her more than flattery.
+- Weight: "must" for anything the posting requires (required, must, proficient in, or listed without qualification); "plus" only for what it calls preferred, a plus, nice to have, or a bonus.
+- Never put a must-have and a nice-to-have in the same line; split them (e.g. "Malay language" must, "Chinese language" plus).
+- Don't rate the overall fit; the site works that out from your lines.
 - If the text isn't a job description, reply only with one sentence saying so.`;
 
 export const FIT_SYSTEM = `${GROUND_RULES}
 
 ${FIT_FORMAT}
 
-If you're given a link, fetch it before writing anything, and start your reply with the "Fit:" line. If the page can't be read or isn't a job posting, reply only: "I couldn't read a job description at that link. Paste the description text instead."`;
+If you're given a link, fetch it before writing anything, and start your reply with the "Verdict:" line. If the page can't be read or isn't a job posting, reply only: "I couldn't read a job description at that link. Paste the description text instead."`;
 
 // Streams Claude's text reply as a plain-text HTTP response.
 export function streamReply(
