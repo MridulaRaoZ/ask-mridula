@@ -2,8 +2,9 @@ import { ApiError, GoogleGenAI } from "@google/genai";
 import fs from "node:fs";
 import path from "node:path";
 
-// Gemini's free tier; the alias tracks Google's current Flash model.
-const MODEL = "gemini-flash-latest";
+// Gemini free-tier models, tried in order. The newest Flash models are often
+// overloaded on the free tier (503), so a busy model falls through to the next.
+const MODELS = ["gemini-3.5-flash", "gemini-flash-lite-latest"];
 
 export type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -58,44 +59,55 @@ export function streamReply(system: string, messages: ChatMessage[], readLinks =
   const encoder = new TextEncoder();
   const body = new ReadableStream({
     async start(controller) {
-      const started = Date.now();
-      try {
-        const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        const stream = await client.models.generateContentStream({
-          model: MODEL,
-          contents: messages.map((m) => ({
-            role: m.role === "assistant" ? "model" : "user",
-            parts: [{ text: m.content }],
-          })),
-          config: {
-            abortSignal: AbortSignal.timeout(45_000),
-            systemInstruction: system,
-            // Lets Gemini read a job posting link that appears in the message.
-            ...(readLinks && { tools: [{ urlContext: {} }] }),
-          },
-        });
-        let wrote = false;
-        for await (const chunk of stream) {
-          if (chunk.text) {
-            if (!wrote) console.log(`Gemini first text after ${Date.now() - started} ms`);
-            wrote = true;
-            controller.enqueue(encoder.encode(chunk.text));
+      const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      let wrote = false;
+      let lastError: unknown;
+      for (const model of MODELS) {
+        const started = Date.now();
+        try {
+          const stream = await client.models.generateContentStream({
+            model,
+            contents: messages.map((m) => ({
+              role: m.role === "assistant" ? "model" : "user",
+              parts: [{ text: m.content }],
+            })),
+            config: {
+              abortSignal: AbortSignal.timeout(30_000),
+              systemInstruction: system,
+              // Lets Gemini read a job posting link that appears in the message.
+              ...(readLinks && { tools: [{ urlContext: {} }] }),
+            },
+          });
+          for await (const chunk of stream) {
+            if (chunk.text) {
+              if (!wrote) console.log(`${model} first text after ${Date.now() - started} ms`);
+              wrote = true;
+              controller.enqueue(encoder.encode(chunk.text));
+            }
           }
+          lastError = undefined;
+          break;
+        } catch (error) {
+          console.error(`${model} failed after ${Date.now() - started} ms:`, error);
+          lastError = error;
+          // Once text has reached the visitor, a retry would repeat it; stop here.
+          if (wrote) break;
         }
-        if (!wrote) controller.enqueue(encoder.encode("Sorry, I can't help with that one."));
-      } catch (error) {
-        console.error(`Gemini stream failed after ${Date.now() - started} ms:`, error);
-        const status = error instanceof ApiError ? error.status : 0;
+      }
+
+      if (lastError) {
+        const status = lastError instanceof ApiError ? lastError.status : 0;
         const message =
           !process.env.GEMINI_API_KEY || status === 400 || status === 401 || status === 403
             ? "The site's AI isn't configured yet (missing or invalid GEMINI_API_KEY)."
-            : status === 429
+            : status === 429 || status === 503
               ? "Lots of questions right now. Please try again in a minute."
               : "Something went wrong. Please try again.";
-        controller.enqueue(encoder.encode(message));
-      } finally {
-        controller.close();
+        controller.enqueue(encoder.encode((wrote ? "\n\n" : "") + message));
+      } else if (!wrote) {
+        controller.enqueue(encoder.encode("Sorry, I can't help with that one."));
       }
+      controller.close();
     },
   });
 
