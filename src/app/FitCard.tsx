@@ -89,6 +89,10 @@ export default function FitCard() {
       >
         {busy ? (link ? "Reading the posting…" : "Matching…") : "See the match"}
       </button>
+      <p className="-mt-1 text-xs text-muted">
+        This site doesn&apos;t store job descriptions or links. They&apos;re sent to Claude only to
+        produce this match.
+      </p>
 
       {(result || busy) && (
         <div className="border-t border-line pt-5">

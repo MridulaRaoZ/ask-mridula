@@ -1,9 +1,13 @@
 import { FIT_SYSTEM, streamReply } from "@/lib/claude";
+import { guard } from "@/lib/guard";
 
 const MAX_JD_CHARS = 15000;
 const MAX_URL_CHARS = 2000;
 
 export async function POST(request: Request) {
+  const blocked = await guard(request);
+  if (blocked) return blocked;
+
   const { jd, url } = (await request.json()) as { jd?: string; url?: string };
 
   if (typeof url === "string") {

@@ -1,10 +1,14 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { CHAT_SYSTEM, streamReply } from "@/lib/claude";
+import { guard } from "@/lib/guard";
 
 const MAX_TURNS = 20;
 const MAX_CHARS = 2000;
 
 export async function POST(request: Request) {
+  const blocked = await guard(request);
+  if (blocked) return blocked;
+
   const { messages } = (await request.json()) as {
     messages?: { role: "user" | "assistant"; content: string }[];
   };

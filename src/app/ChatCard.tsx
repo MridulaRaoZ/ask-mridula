@@ -45,6 +45,7 @@ export default function ChatCard() {
               Hi! I&apos;m an AI that knows Mridula&apos;s career. Ask me anything about her
               experience, or try one of these:
             </p>
+            <p className="text-xs text-muted">This site doesn&apos;t store your questions.</p>
             <div className="flex flex-wrap gap-2">
               {SUGGESTIONS.map((s) => (
                 <button
