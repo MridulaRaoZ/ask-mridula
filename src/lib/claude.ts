@@ -73,8 +73,8 @@ export function streamReply(
       } catch (error) {
         console.error("Claude stream failed:", error);
         const message =
-          error instanceof Anthropic.AuthenticationError
-            ? "The site's AI isn't configured yet."
+          !process.env.ANTHROPIC_API_KEY || error instanceof Anthropic.AuthenticationError
+            ? "The site's AI isn't configured yet (missing or invalid ANTHROPIC_API_KEY)."
             : error instanceof Anthropic.RateLimitError
               ? "Lots of questions right now. Please try again in a minute."
               : "Something went wrong. Please try again.";
