@@ -40,15 +40,19 @@ Gaps to probe:
 Questions worth asking her:
 - <2–3 interview questions that would close the gaps>
 
-Be candid about gaps; a credible assessment helps her more than flattery. If the text isn't a job description, say so briefly.`;
+Be candid about gaps; a credible assessment helps her more than flattery. If the text isn't a job description, say so briefly.
+
+If you're given a link, fetch it before writing anything, and start your reply with the "Fit:" line. If the page can't be read or isn't a job posting, reply only: "I couldn't read a job description at that link. Paste the description text instead."`;
 
 // Streams Claude's text reply as a plain-text HTTP response.
 export function streamReply(
   system: string,
   messages: Anthropic.Beta.BetaMessageParam[],
   effort: "low" | "medium",
+  tools?: Anthropic.Beta.BetaToolUnion[],
 ): Response {
   const stream = client.beta.messages.stream({
+    ...(tools && { tools }),
     model: "claude-opus-5-5",
     max_tokens: 16000,
     betas: ["server-side-fallback-2026-07-01"],

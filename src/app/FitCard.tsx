@@ -10,6 +10,8 @@ const BADGES = {
   Weak: { label: "Weak match", className: "bg-[#f1efe8] text-[#444441]" },
 } as const;
 
+const isLink = (s: string) => /^https?:\/\/\S+$/i.test(s.trim());
+
 // Splits the streamed reply into the badge lines (see FIT_SYSTEM) and the body.
 function parseFit(text: string) {
   const fit = text.match(/^Fit:\s*(Strong|Good|Partial|Weak)\b\s*[—–-]?\s*(.*)$/m);
@@ -28,41 +30,41 @@ export default function FitCard() {
   const [result, setResult] = useState("");
   const [busy, setBusy] = useState(false);
   const fit = parseFit(result);
+  const link = isLink(jd);
 
   async function check() {
     if (busy) return;
     setBusy(true);
     setResult("");
-    await streamPost("/api/fit", { jd }, setResult);
+    await streamPost("/api/fit", link ? { url: jd.trim() } : { jd }, setResult);
     setBusy(false);
   }
 
   return (
-    <section className="flex flex-col rounded-2xl border-2 border-coral bg-white p-5">
-      <h2 className="font-display text-lg font-semibold">Hiring for a role?</h2>
-      <p className="mt-1 text-sm text-muted">
-        Paste your job description and see how well I match, with the evidence behind it.
+    <div className="flex flex-1 flex-col gap-4 p-5">
+      <p className="text-muted">
+        Hiring for a role? Paste a link to the job posting, or the description itself, and see how
+        well Mridula matches, with the evidence behind it.
       </p>
-
       <textarea
         value={jd}
         onChange={(e) => setJd(e.target.value)}
         maxLength={15000}
-        rows={6}
-        placeholder="Paste the job description here…"
-        className="mt-4 w-full resize-y rounded-xl border border-line bg-paper p-4 text-[15px] outline-none placeholder:text-muted/70 focus:border-coral"
+        rows={link ? 2 : 7}
+        placeholder="https://jobs.example.com/senior-pm, or paste the full description"
+        className="w-full resize-y rounded-xl border border-line bg-paper p-4 text-[15px] outline-none placeholder:text-muted/70 focus:border-coral"
       />
       <button
         onClick={check}
-        disabled={busy || jd.trim().length < 50}
-        className="mt-3 self-start rounded-xl bg-coral px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-coral-dark disabled:opacity-40"
+        disabled={busy || !(link || jd.trim().length >= 50)}
+        className="self-start rounded-xl bg-coral px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-coral-dark disabled:opacity-40"
       >
-        {busy ? "Matching…" : "See the match"}
+        {busy ? (link ? "Reading the posting…" : "Matching…") : "See the match"}
       </button>
 
       {(result || busy) && (
-        <div className="mt-5 border-t border-line pt-5">
-          {fit.badge ? (
+        <div className="border-t border-line pt-5">
+          {fit.badge && (
             <div className="flex flex-col gap-2">
               <span
                 className={`inline-flex w-fit items-center gap-1.5 rounded-full px-4 py-1.5 font-display text-lg font-semibold ${fit.badge.className}`}
@@ -72,12 +74,12 @@ export default function FitCard() {
               {fit.evidence && <p className="text-sm font-medium text-ink">{fit.evidence}</p>}
               {fit.verdict && <p className="text-[15px] text-muted">{fit.verdict}</p>}
             </div>
-          ) : null}
+          )}
           <div className="mt-3 whitespace-pre-wrap text-[15px] leading-relaxed text-ink">
             {fit.body || <span className="animate-pulse text-muted">Reading the role…</span>}
           </div>
         </div>
       )}
-    </section>
+    </div>
   );
 }
