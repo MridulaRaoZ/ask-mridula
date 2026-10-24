@@ -24,7 +24,7 @@ export default function Home() {
       <section className="grid items-center gap-6 rounded-3xl border border-line bg-white p-6 sm:grid-cols-[160px_minmax(0,1fr)] sm:p-8">
         {HAS_PHOTO ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src="/mridula.jpg" alt="Mridula Rao" className="size-32 rounded-2xl object-cover sm:size-40" />
+          <img src="/mridula.jpg" alt="Mridula Rao" className="size-32 rounded-2xl object-cover object-[50%_18%] sm:size-40" />
         ) : (
           <div className="flex size-32 items-center justify-center rounded-2xl bg-coral-soft font-display text-4xl font-semibold text-coral-dark sm:size-40">
             MR
