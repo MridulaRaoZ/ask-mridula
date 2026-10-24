@@ -58,6 +58,7 @@ export function streamReply(system: string, messages: ChatMessage[], readLinks =
   const encoder = new TextEncoder();
   const body = new ReadableStream({
     async start(controller) {
+      const started = Date.now();
       try {
         const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const stream = await client.models.generateContentStream({
@@ -67,6 +68,7 @@ export function streamReply(system: string, messages: ChatMessage[], readLinks =
             parts: [{ text: m.content }],
           })),
           config: {
+            abortSignal: AbortSignal.timeout(45_000),
             systemInstruction: system,
             // Lets Gemini read a job posting link that appears in the message.
             ...(readLinks && { tools: [{ urlContext: {} }] }),
@@ -75,13 +77,14 @@ export function streamReply(system: string, messages: ChatMessage[], readLinks =
         let wrote = false;
         for await (const chunk of stream) {
           if (chunk.text) {
+            if (!wrote) console.log(`Gemini first text after ${Date.now() - started} ms`);
             wrote = true;
             controller.enqueue(encoder.encode(chunk.text));
           }
         }
         if (!wrote) controller.enqueue(encoder.encode("Sorry, I can't help with that one."));
       } catch (error) {
-        console.error("Gemini stream failed:", error);
+        console.error(`Gemini stream failed after ${Date.now() - started} ms:`, error);
         const status = error instanceof ApiError ? error.status : 0;
         const message =
           !process.env.GEMINI_API_KEY || status === 400 || status === 401 || status === 403
