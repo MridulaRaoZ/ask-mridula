@@ -8,14 +8,14 @@ Mridula Rao's personal site, with an AI that knows her career.
 ## Stack
 
 - Next.js 15 (App Router) + Tailwind CSS
-- Claude Opus 5.5 via the Anthropic TypeScript SDK, streamed to the browser
-- The whole profile (`src/content/profile.md`) goes in a cached system prompt. It's small, so no vector database or RAG pipeline is needed.
+- Google Gemini (free tier, `gemini-flash-latest`) via the `@google/genai` SDK, streamed to the browser
+- The whole profile (`src/content/profile.md`) goes in the system instruction. It's small, so no vector database or RAG pipeline is needed.
 
 ## Run locally
 
 ```bash
 npm install
-echo "ANTHROPIC_API_KEY=sk-ant-..." > .env.local
+echo "GEMINI_API_KEY=AIza..." > .env.local
 npm run dev
 ```
 
@@ -25,7 +25,7 @@ Set these in Vercel's environment variables before going live:
 
 | Variable | Purpose |
 |---|---|
-| `ANTHROPIC_API_KEY` | Claude API key. Also set a monthly spend limit for it in the Anthropic Console. |
+| `GEMINI_API_KEY` | Free Gemini API key from aistudio.google.com/apikey. Don't enable billing on it, so it stays on the free tier. |
 | `AI_ENABLED` | Kill switch. Set to `false` and redeploy to pause the AI; visitors see a polite message. |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Shared rate-limit counters (add Upstash Redis from the Vercel Marketplace). Without them, limits are per server instance and easy to get around. |
 

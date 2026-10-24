@@ -1,4 +1,4 @@
-import { FIT_SYSTEM, streamReply } from "@/lib/claude";
+import { FIT_SYSTEM, streamReply } from "@/lib/ai";
 import { guard } from "@/lib/guard";
 
 const MAX_JD_CHARS = 15000;
@@ -20,12 +20,11 @@ export async function POST(request: Request) {
     if (!/^https?:$/.test(parsed.protocol) || url.length > MAX_URL_CHARS) {
       return new Response("Use an http or https link to the job posting.", { status: 400 });
     }
-    // Claude reads the posting itself with the web fetch tool, limited to this one URL.
+    // Gemini reads the posting itself with its URL context tool.
     return streamReply(
       FIT_SYSTEM,
-      [{ role: "user", content: `The job description is at this link. Fetch it, then assess the fit:\n${parsed.href}` }],
-      "medium",
-      [{ type: "web_fetch_20260209", name: "web_fetch", max_uses: 1, allowed_domains: [parsed.hostname] }],
+      [{ role: "user", content: `The job description is at this link. Read it, then assess the fit:\n${parsed.href}` }],
+      true,
     );
   }
 
@@ -38,6 +37,5 @@ export async function POST(request: Request) {
   return streamReply(
     FIT_SYSTEM,
     [{ role: "user", content: `<job_description>\n${jd}\n</job_description>` }],
-    "medium",
   );
 }

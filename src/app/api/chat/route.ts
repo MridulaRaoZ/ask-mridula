@@ -1,5 +1,4 @@
-import type Anthropic from "@anthropic-ai/sdk";
-import { CHAT_SYSTEM, streamReply } from "@/lib/claude";
+import { CHAT_SYSTEM, type ChatMessage, streamReply } from "@/lib/ai";
 import { guard } from "@/lib/guard";
 
 const MAX_TURNS = 20;
@@ -31,5 +30,5 @@ export async function POST(request: Request) {
     return new Response("Invalid conversation.", { status: 400 });
   }
 
-  return streamReply(CHAT_SYSTEM, messages as Anthropic.Beta.BetaMessageParam[], "low");
+  return streamReply(CHAT_SYSTEM, messages as ChatMessage[]);
 }

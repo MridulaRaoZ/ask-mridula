@@ -1,8 +1,11 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { ApiError, GoogleGenAI } from "@google/genai";
 import fs from "node:fs";
 import path from "node:path";
 
-const client = new Anthropic();
+// Gemini's free tier; the alias tracks Google's current Flash model.
+const MODEL = "gemini-flash-latest";
+
+export type ChatMessage = { role: "user" | "assistant"; content: string };
 
 const profile = fs.readFileSync(
   path.join(process.cwd(), "src/content/profile.md"),
@@ -50,43 +53,40 @@ ${FIT_FORMAT}
 
 If you're given a link, fetch it before writing anything, and start your reply with the "Verdict:" line. If the page can't be read or isn't a job posting, reply only: "I couldn't read a job description at that link. Paste the description text instead."`;
 
-// Streams Claude's text reply as a plain-text HTTP response.
-export function streamReply(
-  system: string,
-  messages: Anthropic.Beta.BetaMessageParam[],
-  effort: "low" | "medium",
-  tools?: Anthropic.Beta.BetaToolUnion[],
-): Response {
-  const stream = client.beta.messages.stream({
-    ...(tools && { tools }),
-    model: "claude-opus-5-5",
-    max_tokens: 16000,
-    betas: ["server-side-fallback-2026-07-01"],
-    fallbacks: "default",
-    output_config: { effort },
-    system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-    messages,
-  });
-
+// Streams Gemini's text reply as a plain-text HTTP response.
+export function streamReply(system: string, messages: ChatMessage[], readLinks = false): Response {
   const encoder = new TextEncoder();
   const body = new ReadableStream({
     async start(controller) {
       try {
-        for await (const event of stream) {
-          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-            controller.enqueue(encoder.encode(event.delta.text));
+        const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        const stream = await client.models.generateContentStream({
+          model: MODEL,
+          contents: messages.map((m) => ({
+            role: m.role === "assistant" ? "model" : "user",
+            parts: [{ text: m.content }],
+          })),
+          config: {
+            systemInstruction: system,
+            // Lets Gemini read a job posting link that appears in the message.
+            ...(readLinks && { tools: [{ urlContext: {} }] }),
+          },
+        });
+        let wrote = false;
+        for await (const chunk of stream) {
+          if (chunk.text) {
+            wrote = true;
+            controller.enqueue(encoder.encode(chunk.text));
           }
         }
-        const final = await stream.finalMessage();
-        if (final.stop_reason === "refusal") {
-          controller.enqueue(encoder.encode("\n\nSorry, I can't help with that one."));
-        }
+        if (!wrote) controller.enqueue(encoder.encode("Sorry, I can't help with that one."));
       } catch (error) {
-        console.error("Claude stream failed:", error);
+        console.error("Gemini stream failed:", error);
+        const status = error instanceof ApiError ? error.status : 0;
         const message =
-          !process.env.ANTHROPIC_API_KEY || error instanceof Anthropic.AuthenticationError
-            ? "The site's AI isn't configured yet (missing or invalid ANTHROPIC_API_KEY)."
-            : error instanceof Anthropic.RateLimitError
+          !process.env.GEMINI_API_KEY || status === 400 || status === 401 || status === 403
+            ? "The site's AI isn't configured yet (missing or invalid GEMINI_API_KEY)."
+            : status === 429
               ? "Lots of questions right now. Please try again in a minute."
               : "Something went wrong. Please try again.";
         controller.enqueue(encoder.encode(message));

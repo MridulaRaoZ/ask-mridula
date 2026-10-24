@@ -36,7 +36,7 @@ const siteLimit = makeLimiter(SITE_DAILY, "site");
 const plain = (body: string, status: number) =>
   new Response(body, { status, headers: { "Content-Type": "text/plain; charset=utf-8" } });
 
-// Returns a response to send instead of calling Claude, or null to go ahead.
+// Returns a response to send instead of calling the AI, or null to go ahead.
 export async function guard(request: Request): Promise<Response | null> {
   if (process.env.AI_ENABLED === "false") {
     return plain("The AI is paused right now. You can reach Mridula at aludrim@gmail.com.", 503);

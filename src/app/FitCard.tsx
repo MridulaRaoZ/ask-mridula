@@ -90,8 +90,9 @@ export default function FitCard() {
         {busy ? (link ? "Reading the posting…" : "Matching…") : "See the match"}
       </button>
       <p className="-mt-1 text-xs text-muted">
-        This site doesn&apos;t store job descriptions or links. They&apos;re sent to Claude only to
-        produce this match.
+        This site doesn&apos;t store job descriptions or links. Answers come from Google Gemini,
+        and Google may use what you send to improve its services, so leave out anything
+        confidential.
       </p>
 
       {(result || busy) && (
