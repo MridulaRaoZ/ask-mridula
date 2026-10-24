@@ -22,7 +22,10 @@ Ground rules:
 ${profile}
 </profile>`;
 
-export const CHAT_SYSTEM = GROUND_RULES;
+// Answered only when asked; deliberately not shown anywhere on the page.
+export const CHAT_SYSTEM = `${GROUND_RULES}
+
+Availability: if asked about notice period, availability, or how soon she can join, answer with exactly: "Mridula's notice period is one month, so she can join quickly." Don't bring it up otherwise.`;
 
 // A busy recruiter scans this in seconds; FitCard turns each line into a badge or checklist row.
 const FIT_FORMAT = `Task: the user gives a job description. Assess Mridula's fit for a busy recruiter who will spend ten seconds on it. Reply in exactly this plain-text shape and nothing else:
