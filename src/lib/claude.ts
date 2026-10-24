@@ -29,6 +29,7 @@ export const FIT_SYSTEM = `${GROUND_RULES}
 Task: the user pastes a job description. Give an honest fit assessment of Mridula for that role, in this exact plain-text shape:
 
 Fit: <Strong | Good | Partial | Weak> — <one-sentence verdict>
+Evidence: <n> of <m> key requirements backed by her profile
 
 Where she matches:
 - <requirement> → <specific evidence from her profile>

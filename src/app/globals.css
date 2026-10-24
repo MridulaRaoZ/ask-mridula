@@ -2,10 +2,19 @@
 
 @theme inline {
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-bricolage);
+  --color-paper: #fdf8f5;
+  --color-ink: #2a2522;
+  --color-muted: #6f6660;
+  --color-line: #ece4de;
+  --color-coral: #d85a30;
+  --color-coral-dark: #993c1d;
+  --color-coral-soft: #faece7;
+  --color-teal-soft: #e1f5ee;
+  --color-teal-ink: #085041;
 }
 
 body {
-  background: #0b0e13;
-  color: #e4e4e7;
+  background: var(--color-paper);
+  color: var(--color-ink);
 }
