@@ -13,7 +13,7 @@ Email: aludrim@gmail.com · LinkedIn: linkedin.com/in/mridularao5
 
 ## Summary
 
-Senior Product Manager with 9+ years across enterprise SaaS, fintech, and consumer product. Owns cross-functional delivery at Morgan Stanley, contributed to scaling a social commerce platform to 1M MAU at Wooplr, and bootstrapped a franchise business. Strong in customer discovery, roadmapping, and stakeholder alignment in regulated environments. Targeting Senior PM roles in fintech, enterprise SaaS, and security.
+Senior Product Manager with 15+ years across enterprise SaaS, fintech, and consumer product. Owns cross-functional delivery at Morgan Stanley, contributed to scaling a social commerce platform to 1M MAU at Wooplr, and bootstrapped a franchise business. Strong in customer discovery, roadmapping, and stakeholder alignment in regulated environments. Targeting Senior PM roles in fintech, enterprise SaaS, and security.
 
 ## Experience
 
@@ -79,6 +79,7 @@ Mar 2009 – Sept 2011 · Mumbai
 - Analytics: funnel analysis, KPI definition, SQL (basic), Google Analytics, Mixpanel, CleverTap
 - Execution: Agile/Scrum, cross-functional alignment, enterprise delivery, change management
 - Identity and security: SSO, role-based access control, group-based provisioning, entitlement governance, security risk remediation
+- Cloud and technical: Microsoft Azure (Azure AD / Entra ID, SSO and access configuration, QA and production environments, sandbox setup), Python (foundations)
 - Tools: Jira, Confluence, Roadmunk, Figma (review)
 - Domains: enterprise SaaS, fintech, document workflows, social commerce, telecom SaaS
 
@@ -89,6 +90,7 @@ Mar 2009 – Sept 2011 · Mumbai
 
 ## Certifications
 
+- AI Product Management Certification
 - Certified Agile Coach
 - Kanban Expert
 - LEGO SERIOUS PLAY Facilitator

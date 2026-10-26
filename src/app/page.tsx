@@ -7,7 +7,7 @@ import AskPanel from "./AskPanel";
 const HAS_PHOTO = fs.existsSync(path.join(process.cwd(), "public/mridula.jpg"));
 
 const HIGHLIGHTS = [
-  { value: "9+ yrs", label: "Product across fintech, SaaS & consumer" },
+  { value: "15+ yrs", label: "Across fintech, enterprise SaaS & consumer" },
   { value: "1M MAU", label: "Helped scale Wooplr's social commerce app" },
   { value: "+30%", label: "Platform adoption at Morgan Stanley" },
   { value: "10 outlets", label: "Bootstrapped franchise as a founder" },
@@ -77,18 +77,6 @@ export default function Home() {
                 LinkedIn
               </a>
             </div>
-          </section>
-
-          <section className="rounded-2xl border border-line bg-white p-6">
-            <h2 className="text-sm font-medium text-muted">Quick facts</h2>
-            <dl className="mt-3 divide-y divide-line text-[15px]">
-              {site.quickFacts.map((f) => (
-                <div key={f.label} className="grid grid-cols-[130px_minmax(0,1fr)] gap-3 py-2">
-                  <dt className="text-muted">{f.label}</dt>
-                  <dd className="font-medium">{f.value}</dd>
-                </div>
-              ))}
-            </dl>
           </section>
 
           <section className="grid grid-cols-2 gap-4">
