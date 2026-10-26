@@ -90,7 +90,7 @@ Mar 2009 – Sept 2011 · Mumbai
 
 ## Certifications
 
-- AI Product Management Certification
+- Advanced AI Product Management Program, pmcurve (Aug 2026)
 - Certified Agile Coach
 - Kanban Expert
 - LEGO SERIOUS PLAY Facilitator
