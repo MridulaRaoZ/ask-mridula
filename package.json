@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "resume": "node scripts/build-resume.mjs"
   },
   "dependencies": {
     "@google/genai": "2.28.0",

@@ -1,0 +1,39 @@
+{
+  "bookingUrl": "",
+  "resumeFile": "/Mridula-Rao-Resume.pdf",
+  "quickFacts": [
+    { "label": "Location", "value": "Bengaluru · open to relocating internationally" },
+    { "label": "Work style", "value": "Hybrid preferred" },
+    { "label": "Work authorisation", "value": "India · needs visa sponsorship abroad" },
+    { "label": "Languages", "value": "English, Hindi" },
+    { "label": "Open to", "value": "Senior PM roles in fintech, enterprise SaaS, and security" }
+  ],
+  "portfolio": "Owns a portfolio of 5 security and people-risk products end to end, spanning visitor management, physical access control, travel risk, and background screening.",
+  "caseStudies": [
+    {
+      "title": "Hardening and scaling a security-focused visitor management platform",
+      "context": "Morgan Stanley · Product Owner, end to end",
+      "problem": "The platform was expanding to new sites while carrying a compliance gap in how access entitlements were classified, a backlog of recurring user-access issues, and long-standing open risk items.",
+      "did": [
+        "Set up an entitlement classification process that closed the compliance gap.",
+        "Worked with risk and vendor teams to resolve long-standing risk items and keep the vendor-hosted environment running without disruption.",
+        "Fixed the root causes of recurring access problems in the identity setup (SSO, role-based access, group-based provisioning), clearing the backlog.",
+        "Added sandbox test environments to speed up testing and onboarding.",
+        "Ran the rollout with no dedicated squad, while support demand rose about 10x (peaking at 19 issues in a month)."
+      ],
+      "results": ["1 → 5 live locations", "101K+ visitors processed", "~45K employees served, 12K+ hosts", "Access backlog cleared"]
+    },
+    {
+      "title": "Taking a smart-lock access control platform from proof of concept to a five-branch pilot",
+      "context": "Morgan Stanley · Product Owner · in progress",
+      "problem": "Moving branch offices to smart-lock physical access meant a new system had to pass security architecture review, fit the firm's identity provisioning, and prove it could scale before any wider rollout.",
+      "did": [
+        "Took the platform from an initial proof of concept to a structured five-branch pilot.",
+        "Designed the user-provisioning model that ties door access to the firm's identity processes.",
+        "Ran the security remediation programme with the vendor.",
+        "Validated the infrastructure needed to scale, and moved the commercial and governance approvals forward."
+      ],
+      "results": ["POC → 5-branch pilot", "Provisioning model in place", "Security remediation underway", "Contract and governance approvals in progress"]
+    }
+  ]
+}

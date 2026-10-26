@@ -1,6 +1,7 @@
 import { ApiError, GoogleGenAI } from "@google/genai";
 import fs from "node:fs";
 import path from "node:path";
+import site from "@/content/site.json";
 
 // Gemini free-tier models, tried in order. The newest Flash models are often
 // overloaded on the free tier (503), so a busy model falls through to the next.
@@ -8,10 +9,17 @@ const MODELS = ["gemini-3.5-flash", "gemini-flash-lite-latest"];
 
 export type ChatMessage = { role: "user" | "assistant"; content: string };
 
-const profile = fs.readFileSync(
-  path.join(process.cwd(), "src/content/profile.md"),
-  "utf8",
-);
+const caseStudies = site.caseStudies
+  .map(
+    (c) =>
+      `### ${c.title}\n${c.context}\nProblem: ${c.problem}\nWhat she did:\n${c.did.map((d) => `- ${d}`).join("\n")}\nResults: ${c.results.join("; ")}`,
+  )
+  .join("\n\n");
+
+const profile = `${fs.readFileSync(path.join(process.cwd(), "src/content/profile.md"), "utf8")}
+## Case studies
+
+${caseStudies}`;
 
 const GROUND_RULES = `You are the AI assistant on Mridula Rao's personal site. Recruiters and hiring managers use you to learn about her professional background.
 
