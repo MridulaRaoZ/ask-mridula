@@ -55,6 +55,7 @@ Rules:
 - Weight: "must" for anything the posting requires (required, must, proficient in, or listed without qualification); "plus" only for what it calls preferred, a plus, nice to have, or a bonus.
 - Never put a must-have and a nice-to-have in the same line; split them (e.g. "Malay language" must, "Chinese language" plus).
 - Don't rate the overall fit; the site works that out from your lines.
+- Write the checklist first in your head, then make the Verdict agree with it: name a gap only if it has a ~ or ✗ line. Compare years and numbers carefully (15+ years meets an 8+ year requirement).
 - If the text isn't a job description, reply only with one sentence saying so.`;
 
 export const FIT_SYSTEM = `${GROUND_RULES}
