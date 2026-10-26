@@ -43,7 +43,7 @@ Availability: if asked about notice period, availability, or how soon she can jo
 const FIT_FORMAT = `Task: the user gives a job description. Assess Mridula's fit for a busy recruiter who will spend ten seconds on it. Reply in exactly this plain-text shape and nothing else:
 
 Role: <job title> at <hiring company, or "unknown" if not named>
-Verdict: <one sentence, at most 20 words, naming her main strength and the biggest gap>
+Verdict: <one sentence, at most 20 words, on her main strength for this role; leave gaps to the checklist>
 ✓ must | <requirement category, 2–4 words> | <proof from her profile, at most 8 words>
 ~ plus | <requirement category> | <what's partly there, at most 8 words>
 ✗ must | <requirement category> | <what's missing, at most 8 words>
@@ -55,7 +55,7 @@ Rules:
 - Weight: "must" for anything the posting requires (required, must, proficient in, or listed without qualification); "plus" only for what it calls preferred, a plus, nice to have, or a bonus.
 - Never put a must-have and a nice-to-have in the same line; split them (e.g. "Malay language" must, "Chinese language" plus).
 - Don't rate the overall fit; the site works that out from your lines.
-- Write the checklist first in your head, then make the Verdict agree with it: name a gap only if it has a ~ or ✗ line. Compare years and numbers carefully (15+ years meets an 8+ year requirement).
+- Compare years and numbers carefully: 15+ years meets an 8+ year requirement.
 - If the text isn't a job description, reply only with one sentence saying so.`;
 
 export const FIT_SYSTEM = `${GROUND_RULES}
