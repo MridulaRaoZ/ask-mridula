@@ -45,7 +45,7 @@ export default function ChatCard() {
               Hi! I&apos;m an AI that knows Mridula&apos;s career. Ask me anything about her
               experience, or try one of these:
             </p>
-            <p className="text-xs text-muted">This site doesn&apos;t store your questions. Answers come from Google Gemini, and Google may use what you send to improve its services.</p>
+            <p className="text-xs text-muted">This site doesn&apos;t store your questions; it only counts their topic. Answers come from Google Gemini, and Google may use what you send to improve its services.</p>
             <div className="flex flex-wrap gap-2">
               {SUGGESTIONS.map((s) => (
                 <button

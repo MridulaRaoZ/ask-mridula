@@ -13,7 +13,6 @@ export default function OpengraphImage() {
   return new ImageResponse(
     (
       <div style={{ display: "flex", width: "100%", height: "100%", background: "#fdf8f5", padding: 64, gap: 56, alignItems: "center" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={`data:image/jpeg;base64,${photo}`}
           alt=""

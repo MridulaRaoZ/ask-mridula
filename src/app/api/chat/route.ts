@@ -1,5 +1,6 @@
 import { CHAT_SYSTEM, type ChatMessage, streamReply } from "@/lib/ai";
 import { guard } from "@/lib/guard";
+import { recordChat } from "@/lib/stats";
 
 const MAX_TURNS = 20;
 const MAX_CHARS = 2000;
@@ -30,5 +31,6 @@ export async function POST(request: Request) {
     return new Response("Invalid conversation.", { status: 400 });
   }
 
+  await recordChat(messages[messages.length - 1].content);
   return streamReply(CHAT_SYSTEM, messages as ChatMessage[]);
 }

@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import site from "@/content/site.json";
 import AskPanel from "./AskPanel";
+import VisitTracker from "./VisitTracker";
 
 // Drop a photo at public/mridula.jpg and it replaces the initials.
 const HAS_PHOTO = fs.existsSync(path.join(process.cwd(), "public/mridula.jpg"));
@@ -23,6 +24,7 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 sm:px-6 lg:py-14">
+      <VisitTracker />
       <div className="grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         {/* On phones this column dissolves so the AI panel can follow the profile card. */}
         <div className="contents lg:flex lg:flex-col lg:gap-4">

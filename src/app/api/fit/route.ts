@@ -1,5 +1,6 @@
 import { FIT_SYSTEM, streamReply } from "@/lib/ai";
 import { guard } from "@/lib/guard";
+import { recordFit } from "@/lib/stats";
 
 const MAX_JD_CHARS = 15000;
 const MAX_URL_CHARS = 2000;
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
       FIT_SYSTEM,
       [{ role: "user", content: `The job description is at this link. Read it, then assess the fit:\n${parsed.href}` }],
       true,
+      (reply) => recordFit(reply, "link"),
     );
   }
 
@@ -37,5 +39,7 @@ export async function POST(request: Request) {
   return streamReply(
     FIT_SYSTEM,
     [{ role: "user", content: `<job_description>\n${jd}\n</job_description>` }],
+    false,
+    (reply) => recordFit(reply, "text"),
   );
 }

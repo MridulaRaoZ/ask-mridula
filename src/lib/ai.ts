@@ -42,6 +42,7 @@ Availability: if asked about notice period, availability, or how soon she can jo
 // A busy recruiter scans this in seconds; FitCard turns each line into a badge or checklist row.
 const FIT_FORMAT = `Task: the user gives a job description. Assess Mridula's fit for a busy recruiter who will spend ten seconds on it. Reply in exactly this plain-text shape and nothing else:
 
+Role: <job title> at <hiring company, or "unknown" if not named>
 Verdict: <one sentence, at most 20 words, naming her main strength and the biggest gap>
 ✓ must | <requirement category, 2–4 words> | <proof from her profile, at most 8 words>
 ~ plus | <requirement category> | <what's partly there, at most 8 words>
@@ -60,15 +61,22 @@ export const FIT_SYSTEM = `${GROUND_RULES}
 
 ${FIT_FORMAT}
 
-If you're given a link, fetch it before writing anything, and start your reply with the "Verdict:" line. If the page can't be read or isn't a job posting, reply only: "I couldn't read a job description at that link. Paste the description text instead."`;
+If you're given a link, fetch it before writing anything, and start your reply with the "Role:" line. If the page can't be read or isn't a job posting, reply only: "I couldn't read a job description at that link. Paste the description text instead."`;
 
 // Streams Gemini's text reply as a plain-text HTTP response.
-export function streamReply(system: string, messages: ChatMessage[], readLinks = false): Response {
+// onDone receives the full reply text (used for stats) before the response closes.
+export function streamReply(
+  system: string,
+  messages: ChatMessage[],
+  readLinks = false,
+  onDone?: (reply: string) => Promise<void>,
+): Response {
   const encoder = new TextEncoder();
   const body = new ReadableStream({
     async start(controller) {
       const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       let wrote = false;
+      let reply = "";
       let lastError: unknown;
       for (const model of MODELS) {
         const started = Date.now();
@@ -96,6 +104,7 @@ export function streamReply(system: string, messages: ChatMessage[], readLinks =
               clearTimeout(firstTextTimer);
               if (!wrote) console.log(`${model} first text after ${Date.now() - started} ms`);
               wrote = true;
+              reply += chunk.text;
               controller.enqueue(encoder.encode(chunk.text));
             }
           }
@@ -124,6 +133,7 @@ export function streamReply(system: string, messages: ChatMessage[], readLinks =
       } else if (!wrote) {
         controller.enqueue(encoder.encode("Sorry, I can't help with that one."));
       }
+      if (reply) await onDone?.(reply);
       controller.close();
     },
   });

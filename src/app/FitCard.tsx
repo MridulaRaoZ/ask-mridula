@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { parseRole, parseRows, rate } from "@/lib/fit";
 import { streamPost } from "@/lib/streamPost";
 
 const BADGES = {
@@ -11,37 +12,20 @@ const BADGES = {
 } as const;
 
 const MARKS = {
-  "✓": { label: "Met", score: 1, className: "bg-[#eaf3de] text-[#27500a]" },
-  "~": { label: "Partly met", score: 0.5, className: "bg-[#faeeda] text-[#633806]" },
-  "✗": { label: "Not shown", score: 0, className: "bg-[#f1efe8] text-[#5f5e5a]" },
+  "✓": { label: "Met", className: "bg-[#eaf3de] text-[#27500a]" },
+  "~": { label: "Partly met", className: "bg-[#faeeda] text-[#633806]" },
+  "✗": { label: "Not shown", className: "bg-[#f1efe8] text-[#5f5e5a]" },
 } as const;
-
-type Mark = keyof typeof MARKS;
-type Row = { mark: Mark; must: boolean; label: string; proof: string };
 
 const isLink = (s: string) => /^https?:\/\/\S+$/i.test(s.trim());
 
-// The site, not the model, decides the badge: must-haves weigh double, and a
-// missing must-have caps the result at Partial (two or more make it Weak).
-function rate(rows: Row[]): keyof typeof BADGES {
-  const weight = (r: Row) => (r.must ? 2 : 1);
-  const total = rows.reduce((sum, r) => sum + weight(r), 0);
-  const got = rows.reduce((sum, r) => sum + weight(r) * MARKS[r.mark].score, 0);
-  const ratio = got / total;
-  const mustMissing = rows.filter((r) => r.must && r.mark === "✗").length;
-  if (mustMissing >= 2 || ratio < 0.4) return "Weak";
-  if (mustMissing === 1 || ratio < 0.65) return "Partial";
-  return ratio < 0.85 ? "Good" : "Strong";
-}
-
-// Parses the line format in FIT_FORMAT (src/lib/claude.ts); works on a partial stream.
+// Works on a partial stream; see FIT_FORMAT in src/lib/ai.ts for the line format.
 function parseFit(text: string, done: boolean) {
-  const rows: Row[] = [...text.matchAll(/^([✓~✗])\s*(?:(must|plus)\s*\|\s*)?([^|\n]+?)\s*(?:\|\s*(.*))?$/gm)].map(
-    (m) => ({ mark: m[1] as Mark, must: m[2] !== "plus", label: m[3], proof: m[4] ?? "" }),
-  );
+  const rows = parseRows(text);
   const ask = text.match(/^Ask:\s*(.*)$/m)?.[1];
   const missing = rows.filter((r) => r.must && r.mark === "✗");
   return {
+    role: parseRole(text),
     verdict: text.match(/^Verdict:\s*(.*)$/m)?.[1],
     rows,
     // Rate only once every row is in, so the badge doesn't flicker mid-stream.
@@ -49,7 +33,7 @@ function parseFit(text: string, done: boolean) {
     met: rows.filter((r) => r.mark === "✓").length,
     missing,
     ask,
-    other: rows.length ? "" : text,
+    other: rows.length ? "" : text.replace(/^Role:.*$/m, "").trim(),
   };
 }
 
@@ -90,8 +74,9 @@ export default function FitCard() {
         {busy ? (link ? "Reading the posting…" : "Matching…") : "See the match"}
       </button>
       <p className="-mt-1 text-xs text-muted">
-        This site doesn&apos;t store job descriptions or links. Answers come from Google Gemini,
-        and Google may use what you send to improve its services, so leave out anything
+        This site doesn&apos;t store job descriptions or links; it keeps only the role title,
+        company, and match result as anonymous stats. Answers come from Google Gemini, and
+        Google may use what you send to improve its services, so leave out anything
         confidential.
       </p>
 
@@ -99,6 +84,12 @@ export default function FitCard() {
         <div className="border-t border-line pt-5">
           {fit.rows.length ? (
             <div className="flex flex-col gap-3">
+              {fit.role && (
+                <p className="text-sm text-muted">
+                  {fit.role.title}
+                  {fit.role.company !== "unknown" && ` · ${fit.role.company}`}
+                </p>
+              )}
               <div className="flex flex-wrap items-center gap-3">
                 {fit.badge ? (
                   <span

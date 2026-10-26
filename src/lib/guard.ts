@@ -1,5 +1,5 @@
 import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
+import { redis } from "./redis";
 
 const PER_VISITOR = { max: 20, window: "1 h", ms: 60 * 60 * 1000 } as const;
 const SITE_DAILY = { max: 300, window: "1 d", ms: 24 * 60 * 60 * 1000 } as const;
@@ -9,9 +9,9 @@ type Limiter = (key: string) => Promise<boolean>;
 // Shared counters in Upstash Redis when configured (needed on Vercel, where
 // each serverless instance has its own memory); in-memory for local dev.
 function makeLimiter(limit: { max: number; window: "1 h" | "1 d"; ms: number }, prefix: string): Limiter {
-  if (process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL) {
+  if (redis) {
     const rl = new Ratelimit({
-      redis: Redis.fromEnv(),
+      redis,
       limiter: Ratelimit.slidingWindow(limit.max, limit.window),
       prefix: `ask-mridula:${prefix}`,
     });
