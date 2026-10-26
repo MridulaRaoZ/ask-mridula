@@ -8,7 +8,7 @@ export default function AskPanel() {
   const [tab, setTab] = useState<"chat" | "fit">("chat");
 
   return (
-    <section className="flex min-h-[600px] flex-col rounded-3xl border border-line bg-white">
+    <section className="flex h-full min-h-[440px] flex-col rounded-3xl border border-line bg-white lg:min-h-[600px]">
       <div className="flex gap-1 border-b border-line p-2">
         {(["chat", "fit"] as const).map((t) => (
           <button

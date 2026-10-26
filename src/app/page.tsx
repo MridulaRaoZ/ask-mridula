@@ -15,12 +15,22 @@ const HIGHLIGHTS = [
 
 const COMPANIES = ["Morgan Stanley", "Synchronoss", "Wooplr", "Jucicane"];
 
+// Rebuild the page daily so the "Open to opportunities" month stays current.
+export const revalidate = 86400;
+
 export default function Home() {
+  const month = new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
+
   return (
     <main className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 sm:px-6 lg:py-14">
       <div className="grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <div className="flex flex-col gap-4">
-          <section className="rounded-3xl border border-line bg-white p-6">
+        {/* On phones this column dissolves so the AI panel can follow the profile card. */}
+        <div className="contents lg:flex lg:flex-col lg:gap-4">
+          <section className="order-1 rounded-3xl border border-line bg-white p-6">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#eaf3de] px-3 py-1 text-sm font-medium text-[#27500a]">
+              <span className="size-2 rounded-full bg-[#3b6d11]" aria-hidden="true" />
+              Open to opportunities · {month}
+            </p>
             <div className="flex items-center gap-4">
               {HAS_PHOTO ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -36,7 +46,7 @@ export default function Home() {
               )}
               <div>
                 <p className="text-sm font-medium text-coral">Senior Product Manager · Bengaluru</p>
-                <h1 className="font-display text-4xl font-semibold tracking-tight">Mridula Rao</h1>
+                <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">Mridula Rao</h1>
               </div>
             </div>
             <p className="mt-4 leading-relaxed text-muted">
@@ -79,16 +89,16 @@ export default function Home() {
             </div>
           </section>
 
-          <section className="grid grid-cols-2 gap-4">
+          <section className="order-3 grid grid-cols-2 gap-4">
             {HIGHLIGHTS.map((h) => (
               <div key={h.label} className="rounded-2xl border border-line bg-white p-5">
-                <div className="font-display text-3xl font-semibold tracking-tight">{h.value}</div>
+                <div className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">{h.value}</div>
                 <div className="mt-1 text-sm leading-snug text-muted">{h.label}</div>
               </div>
             ))}
           </section>
 
-          <section className="rounded-2xl border border-line bg-white p-6">
+          <section className="order-4 rounded-2xl border border-line bg-white p-6">
             <h2 className="text-sm font-medium text-muted">Where I&apos;ve worked</h2>
             <div className="mt-3 flex flex-wrap gap-2">
               {COMPANIES.map((c) => (
@@ -100,7 +110,9 @@ export default function Home() {
           </section>
         </div>
 
-        <AskPanel />
+        <div className="order-2 lg:order-none">
+          <AskPanel />
+        </div>
       </div>
 
       <section className="rounded-3xl border border-line bg-white p-6 sm:p-8">

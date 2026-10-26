@@ -12,9 +12,15 @@ const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
 });
 
+const description =
+  "Senior Product Manager, 15+ years. Chat with an AI that knows my career, or check my fit for your role.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ask-mridula.vercel.app"),
   title: "Mridula Rao · Ask My Resume",
-  description: "Senior Product Manager. Chat with an AI that knows my career, or check my fit for your role.",
+  description,
+  openGraph: { title: "Mridula Rao · Senior Product Manager", description, type: "profile" },
+  twitter: { card: "summary_large_image", title: "Mridula Rao · Senior Product Manager", description },
 };
 
 export default function RootLayout({
